@@ -67,76 +67,74 @@ namespace cinder { namespace midi {
 		mMidiIn->closePort();
 	}
 
-	void Input::processMessage(double deltatime, std::vector<unsigned char> *message){
-		unsigned int numBytes = message->size();
-
+	void Input::processMessage(double deltatime, std::vector<unsigned char> *message)
+    {
 		// solution for proper reading anything above MIDI_TIME_CODE goes to miguelvb
 		// http://forum.openframeworks.cc/t/incorrect-handling-of-midiin-messages-in-ofxmidi-solved/8719
-		
 
-			Message msg;
-			msg.port = mPort;
-			if((message->at(0)) >= MIDI_SYSEX) {
-				msg.status = (MidiStatus)(message->at(0) & 0xFF);
-				msg.channel = 0;
-			} else {
-				msg.status = (MidiStatus) (message->at(0) & 0xF0);
-				msg.channel = (int) (message->at(0) & 0x0F)+1;
-			}
+        Message msg;
 
+        if( message->at(0) >= MIDI_SYSEX)
+        {
+            msg.status  = (MidiStatus)(message->at(0) & 0xFF);
+            msg.channel = 0;
+        }
+        else
+        {
+            msg.status  = (MidiStatus) (message->at(0) & 0xF0);
+            msg.channel = (int) (message->at(0) & 0x0F)+1;
+        }
+        
+        if ( msg.status == MIDI_NOTE_ON || msg.status == MIDI_NOTE_OFF )
+        {
+            msg.pitch       = (int) message->at(1);
+            msg.velocity    = (int) message->at(2);
+        }
+        else if ( msg.status == MIDI_CONTROL_CHANGE )
+        {
+            msg.control = (int) message->at(1);
+            msg.value   = (int) message->at(2);
+        }
+        else if ( msg.status == MIDI_PROGRAM_CHANGE || msg.status == MIDI_AFTERTOUCH )
+        {
+            msg.value = (int) message->at(1);
+        }
+        
+        else if ( msg.status == MIDI_PITCH_BEND )
+        {
+            msg.value = (int) ( message->at(2) << 7 ) +(int) message->at(1); // msb + lsb
+        }
+        else if ( msg.status == MIDI_POLY_AFTERTOUCH )
+        {
+            msg.pitch = (int) message->at(1);
+            msg.value = (int) message->at(2);
+        }
+        
+        midiSignal.emit(msg);
+    }
 
-			msg.port = mPort;
+    // bool Input::hasWaitingMessages(){
+    // 	int queue_length = (int)mMessages.size();
+    // 	return queue_length > 0;
+    // }
 
-			switch(msg.status) {
-			case MIDI_NOTE_ON :
-			case MIDI_NOTE_OFF:
-				msg.pitch = (int) message->at(1);
-				msg.velocity = (int) message->at(2);
-				break;
-			case MIDI_CONTROL_CHANGE:
-				msg.control = (int) message->at(1);
-				msg.value = (int) message->at(2);
-				break;
-			case MIDI_PROGRAM_CHANGE:
-			case MIDI_AFTERTOUCH:
-				msg.value = (int) message->at(1);
-				break;
-			case MIDI_PITCH_BEND:
-				msg.value = (int) (message->at(2) << 7) +
-					(int) message->at(1); // msb + lsb
-				break;
-			case MIDI_POLY_AFTERTOUCH:
-				msg.pitch = (int) message->at(1);
-				msg.value = (int) message->at(2);
-				break;
-			default:
-				break;
-			}
-			midiSignal(msg);
-		}
+    // bool Input::getNextMessage(Message* message){
+    // 	if (mMessages.size() == 0){
+    // 		return false;
+    // 	}
 
-		// bool Input::hasWaitingMessages(){
-		// 	int queue_length = (int)mMessages.size();
-		// 	return queue_length > 0;
-		// }
+    // 	Message* src_message = mMessages.front();
+    // 	message->copy(*src_message);
+    // 	delete src_message;
+    // 	mMessages.pop_front();
 
-		// bool Input::getNextMessage(Message* message){
-		// 	if (mMessages.size() == 0){
-		// 		return false;
-		// 	}
+    // 	return true;
+    // }
 
-		// 	Message* src_message = mMessages.front();
-		// 	message->copy(*src_message);
-		// 	delete src_message;
-		// 	mMessages.pop_front();
+    unsigned int Input::getPort()const{
+        return mPort;
 
-		// 	return true;
-		// }
-
-		unsigned int Input::getPort()const{
-			return mPort;
-
-		}
+    }
 
 
 	} // namespace midi

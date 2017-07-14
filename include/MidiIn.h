@@ -36,7 +36,7 @@ Midi parsing taken from openFrameworks addon ofxMidi by Theo Watson & Dan Wilcox
 #include <iostream>
 #include "MidiHeaders.h"
 #include "MidiConstants.h"
- #include "boost/signals2.hpp"
+// #include "boost/signals2.hpp"
 /*
 #include "MidiConstants.h"
 #include "RtMidi.h"
@@ -67,7 +67,7 @@ public:
 	std::vector<std::string> mPortNames;
 	std::string getName()	{ return mName; };
 	std::string getPortName(int number);
-	boost::signals2::signal<void(Message)> midiSignal;	
+    ci::signals::Signal<void(Message)> midiSignal;
 	
 	//typedef boost::signal<void (Message*)> signal_t;
 	// bool hasWaitingMessages();

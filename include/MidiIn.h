@@ -51,11 +51,10 @@ public:
 	virtual ~Input();
 	
 	void processMessage(double deltatime, std::vector<unsigned char> *message);
-	void listPorts();
 	void openPort(unsigned int port = 0);
 	void closePort();
 	
-	unsigned int getNumPorts()const{ return mNumPorts; }
+	unsigned int getNumPorts()const{ return mMidiIn->getPortCount(); }
 	unsigned int getPort()const;
 	void ignoreTypes(bool sysex, bool time, bool midisense);
 	
@@ -67,11 +66,8 @@ public:
 protected:
 	
 	RtMidiIn        *mMidiIn;
-	unsigned int    mNumPorts;
 	unsigned int    mPort;
 	std::string     mName;
-    
-	std::vector<std::string>            mPortNames;
 	
 };
 

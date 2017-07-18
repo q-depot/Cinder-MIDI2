@@ -36,14 +36,7 @@ Midi parsing taken from openFrameworks addon ofxMidi by Theo Watson & Dan Wilcox
 #include <iostream>
 #include "MidiHeaders.h"
 #include "MidiConstants.h"
-// #include "boost/signals2.hpp"
-/*
-#include "MidiConstants.h"
-#include "RtMidi.h"
-#include <deque>
-#include "MidiExceptions.h"
-#include "MidiMessage.h"
-*/
+#include "cinder/Signals.h"
 
 
 namespace cinder { namespace midi {
@@ -51,7 +44,9 @@ namespace cinder { namespace midi {
 void MidiInCallback( double deltatime, std::vector< unsigned char > *message, void *userData );
 
 class Input {
+
 public:
+
 	Input();
 	virtual ~Input();
 	
@@ -64,25 +59,20 @@ public:
 	unsigned int getPort()const;
 	void ignoreTypes(bool sysex, bool time, bool midisense);
 	
-	std::vector<std::string> mPortNames;
 	std::string getName()	{ return mName; };
 	std::string getPortName(int number);
-    ci::signals::Signal<void(Message)> midiSignal;
-	
-	//typedef boost::signal<void (Message*)> signal_t;
-	// bool hasWaitingMessages();
-	//signal_t mSignal;
-	// bool getNextMessage(Message*);
+   
+    signals::Signal<void(Message)>  mMidiSignal;
 
 protected:
 	
-	RtMidiIn *mMidiIn;
-	unsigned int mNumPorts;
-	unsigned int mPort;
-	std::string mName;
-	//std::deque<Message*> mMessages;
-
-
+	RtMidiIn        *mMidiIn;
+	unsigned int    mNumPorts;
+	unsigned int    mPort;
+	std::string     mName;
+    
+	std::vector<std::string>            mPortNames;
+	
 };
 
 } // namespace midi

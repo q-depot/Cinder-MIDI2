@@ -110,26 +110,8 @@ namespace cinder { namespace midi {
             msg.value = (int) message->at(2);
         }
         
-        midiSignal.emit(msg);
+        mMidiSignal.emit(msg);
     }
-
-    // bool Input::hasWaitingMessages(){
-    // 	int queue_length = (int)mMessages.size();
-    // 	return queue_length > 0;
-    // }
-
-    // bool Input::getNextMessage(Message* message){
-    // 	if (mMessages.size() == 0){
-    // 		return false;
-    // 	}
-
-    // 	Message* src_message = mMessages.front();
-    // 	message->copy(*src_message);
-    // 	delete src_message;
-    // 	mMessages.pop_front();
-
-    // 	return true;
-    // }
 
     unsigned int Input::getPort()const{
         return mPort;
